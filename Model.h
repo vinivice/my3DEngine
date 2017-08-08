@@ -25,6 +25,8 @@ public:
 	void updateVectors();
 	void increaseAngles(GLfloat dr, GLfloat dp, GLfloat dy);
 	void setAngles(GLfloat r, GLfloat p, GLfloat y);
+	virtual void update();
+	virtual void draw(GLboolean willDraw = true);
 	/*
 	void updatePosition(float dx, float dy, float dz);
 	void setPosition(float x, float y, float z);

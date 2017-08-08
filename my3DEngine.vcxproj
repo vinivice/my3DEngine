@@ -118,12 +118,14 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="ModelTree.cpp" />
     <ClCompile Include="ModelType.cpp" />
     <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="ModelTree.h" />
     <ClInclude Include="ModelType.h" />
     <ClInclude Include="Shader.h" />
   </ItemGroup>
