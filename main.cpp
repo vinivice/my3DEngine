@@ -14,6 +14,7 @@
 #include "Shader.h"
 #include"ModelType.h"
 #include"Model.h"
+#include"ModelTree.h"
 #include "Camera.h"
 
 const GLint WIDTH = 800, HEIGHT = 600;
@@ -21,11 +22,16 @@ Camera *camera = new Camera();
 bool keyPress = false, keyRepeat = false, keyRelease = false;
 GLdouble mouseOldX, mouseOldY, mouseNewX, mouseNewY;
 
+GLboolean run = true;
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
 	if(key == GLFW_KEY_ESCAPE)
 	{
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	}
+	else if (key == GLFW_KEY_B && action == GLFW_PRESS)
+	{
+		run = !run;
 	}
 }
 
@@ -68,39 +74,48 @@ int main() {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	//glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 
 	Shader ourShader("core.vs", "core.fs");
 
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	GLfloat vertices[] =
+	GLfloat verticesSquare[] =
 	{
 		//Position				//Color					
-		0.5f, 0.5f, 0.5f,       1.0f, 0.0f, 0.0f,
-		0.5f, -0.5f, 0.5f,		1.0f, 1.0f, 1.0f,
-		-0.5f, -0.5f, 0.5f,		1.0f, 0.0f, 0.0f,
-		-0.5f, 0.5f, 0.5f,		1.0f, 1.0f, 1.0f
+		0.5f, 0.5f, 0.0f,       0.0f, 0.0f, 1.0f,
+		0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f,
+		-0.5f, -0.5f, 0.0f,		1.0f, 0.0f, 0.0f,
+		-0.5f, 0.5f, 0.0f,		1.0f, 1.0f, 1.0f
 
 	};
 
-	GLuint indices[] =
+	GLuint indicesSquare[] =
 	{
 		0, 1, 3, //First Triangle
 		1, 2, 3 //Second Triangle
 	};
 
-	ModelType *Square1 = new ModelType("square", vertices, sizeof(vertices), indices, sizeof(indices));
-	ModelType *Square2 = new ModelType("square", vertices, sizeof(vertices), indices, sizeof(indices));
-	ModelType *Square3 = new ModelType("square", vertices, sizeof(vertices), indices, sizeof(indices));
-	ModelType *Square4 = new ModelType("square", vertices, sizeof(vertices), indices, sizeof(indices));
+	ModelType *Square = new ModelType("square", verticesSquare, sizeof(verticesSquare), indicesSquare, sizeof(indicesSquare), 6);
 	std::vector<Model*> modelsVector;
 
-	modelsVector.push_back(new Model(Square1, glm::vec3(-0.5f, 0.5f, -15.0f), 0.0f, 0.0f, 0.0f));
-	modelsVector.push_back(new Model(Square2, glm::vec3(0.5f, 0.5f, -10.0f), 0.0f, 0.0f, 0.0f));
-	modelsVector.push_back(new Model(Square3, glm::vec3(0.5f, -0.5f, -5.f), 0.0f, 0.0f, 0.0f));
-	modelsVector.push_back(new Model(Square4, glm::vec3(-0.5f, -0.5f, -2.0f), 0.0f, 0.0f, 0.0f));
+	modelsVector.push_back(new Model(Square, glm::vec3(-0.5f, 0.5f, -15.0f), 0.0f, 0.0f, 0.0f));
+	modelsVector.push_back(new Model(Square, glm::vec3(0.5f, 0.5f, -10.0f), 0.0f, 0.0f, 0.0f));
+	modelsVector.push_back(new Model(Square, glm::vec3(0.5f, -0.5f, -5.f), 0.0f, 0.0f, 0.0f));
+	modelsVector.push_back(new Model(Square, glm::vec3(-0.5f, -0.5f, -2.0f), 0.0f, 0.0f, 0.0f));
+
+	ModelTree *tempModelTree = new ModelTree(NULL, glm::vec3(0.0f, 0.0f, -20.0f), 0.0f, 0.0f, 0.0f);
+
+	tempModelTree->addPart(new ModelTree(Square, glm::vec3(0.5f, 0.0f, 0.0f), 0.0f, -90.0f, 0.0f));
+	tempModelTree->addPart(new ModelTree(Square, glm::vec3(-0.5f, 0.0f, 0.0f), 0.0f, 90.0f, 0.0f));
+	tempModelTree->addPart(new ModelTree(Square, glm::vec3(0.0f, 0.5f, 0.0f), 90.0f, 0.0f, 0.0f));
+	tempModelTree->addPart(new ModelTree(Square, glm::vec3(0.0f, -0.5f, 0.0f), -90.0f, 0.0f, 0.0f));
+	tempModelTree->addPart(new ModelTree(Square, glm::vec3(0.0f, 0.0f, 0.5f), 0.0f, 0.0f, 0.0f));
+	tempModelTree->addPart(new ModelTree(Square, glm::vec3(0.0f, 0.0f, -0.5f), 0.0f, 0.0f, 0.0f));
+
+	modelsVector.push_back(tempModelTree);
+
 
 	/*
 	GLuint VBO, VAO, EBO;
@@ -148,7 +163,7 @@ int main() {
 
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		ourShader.use();
 		/*
@@ -164,7 +179,7 @@ int main() {
 		//glBindVertexArray(0);
 
 		*/
-		modelLocation = glGetUniformLocation(ourShader.Program, "model");
+		modelLocation = glGetUniformLocation(ourShader.Program, "model[0]");
 		viewLocation = glGetUniformLocation(ourShader.Program, "view");
 		projectionLocation = glGetUniformLocation(ourShader.Program, "projection");
 		glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(viewMatrix));
@@ -172,24 +187,31 @@ int main() {
 
 		for (std::vector<Model*>::iterator it = modelsVector.begin(); it != modelsVector.end(); it++)
 		{
-			(*it)->increaseAngles(0.0f, 0.0f, (newTime - oldTime)*(5.0f));
-			(*it)->updateVectors();
-			//(*it)->updateVectors(0.0f, 0.0f, 0.0f);
+			if (run)
+			{
+				//(*it)->increaseAngles(0.0f, 0.0f, (newTime - oldTime)*(15.0f));
+				(*it)->updateVectors();
+				//(*it)->printData();
+			}
+			/*
 			modelMatrix = (*it)->getModelMatrix();
 
 
 			glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
-			
+
 
 
 			glBindVertexArray((*it)->getVAO());
 			//glDrawArrays(GL_TRIANGLES, 0, 3);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			*/
+			(*it)->draw(&ourShader);
 		}
-
+	
 		glBindVertexArray(0);
 		glfwSwapBuffers(window);
 
+		//std::cout << "FPS: " << 1 / (newTime - oldTime) << "\n";
 		oldTime = newTime;
 		mouseOldX = mouseNewX;
 		mouseOldY = mouseNewY;

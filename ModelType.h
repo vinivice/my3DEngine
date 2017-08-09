@@ -11,13 +11,14 @@ protected:
 	//glm::vec3 *vertices; //3 position, 3 color
 	//int *indices;
 
-	GLuint VAO, VBO, EBO;
+	GLuint VAO, VBO, EBO, numberVertices;
 
 public:
 	ModelType();
-	ModelType(std::string name, GLfloat *vertices, GLsizeiptr verticesSize, GLuint *indices, GLsizeiptr indicesSize);
-	void setModelType(std::string name, GLfloat *vertices, GLsizeiptr verticesSize, GLuint *indices, GLsizeiptr indicesSize);
+	ModelType(std::string name, GLfloat *vertices, GLsizeiptr verticesSize, GLuint *indices, GLsizeiptr indicesSize, GLint nTriangles);
+	void setModelType(std::string name, GLfloat *vertices, GLsizeiptr verticesSize, GLuint *indices, GLsizeiptr indicesSize, GLint nTriangles);
 	GLuint getVAO();
+	GLint getNumberVertices();
 	
 	
 

@@ -1,12 +1,12 @@
 #include"ModelType.h"
 
-ModelType::ModelType(std::string name, GLfloat *vertices, GLsizeiptr verticesSize, GLuint *indices, GLsizeiptr indicesSize)
+ModelType::ModelType(std::string name, GLfloat *vertices, GLsizeiptr verticesSize, GLuint *indices, GLsizeiptr indicesSize, GLint nVertices)
 {
-	setModelType(name, vertices, verticesSize, indices, indicesSize);
+	setModelType(name, vertices, verticesSize, indices, indicesSize, nVertices);
 }
 
 
-void ModelType::setModelType(std::string name, GLfloat *vertices, GLsizeiptr verticesSize, GLuint *indices, GLsizeiptr indicesSize)
+void ModelType::setModelType(std::string name, GLfloat *vertices, GLsizeiptr verticesSize, GLuint *indices, GLsizeiptr indicesSize, GLint nVertices)
 {
 	this->modelName = name;
 	glGenVertexArrays(1, &(this->VAO));
@@ -32,9 +32,16 @@ void ModelType::setModelType(std::string name, GLfloat *vertices, GLsizeiptr ver
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
+	this->numberVertices = nVertices;
+
 }
 
 GLuint ModelType::getVAO()
 {
 	return this->VAO;
+}
+
+GLint ModelType::getNumberVertices()
+{
+	return this->numberVertices;
 }

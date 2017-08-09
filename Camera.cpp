@@ -80,15 +80,7 @@ void Camera::move(GLFWwindow* window, GLfloat dt, GLdouble mousedx, GLdouble mou
 	if (mousedx > PRECISION || mousedx < -PRECISION)
 	{
 		this->pitch -= mousedx*this->angularSpeed*dt;
-		while (this->pitch >= 360.0f)
-		{
-			this->pitch -= 360.0f;
-		}
-
-		while (this->pitch < 0.0f)
-		{
-			this->pitch += 360.0f;
-		}
+		this->pitch = fmod(this->pitch, 360.0f);
 		update = true;
 	}
 
@@ -99,11 +91,11 @@ void Camera::move(GLFWwindow* window, GLfloat dt, GLdouble mousedx, GLdouble mou
 		{
 			this->yaw = 89.0f;
 		}
-
-		if (this->yaw < -89.0f)
+		else if (this->yaw < -89.0f)
 		{
 			this->yaw = -89.0f;
 		}
+		
 		update = true;
 	}
 
@@ -112,8 +104,12 @@ void Camera::move(GLFWwindow* window, GLfloat dt, GLdouble mousedx, GLdouble mou
 		this->moveMode = 0;
 		this->updateVectors();
 		view = this->getView();
+		std::cout << "==================\n";
+		std::cout << "POSITION: " << this->position.x << " " << this->position.y << " " << this->position.z << std::endl;
 		std::cout << "front " << front.x << "\t" << front.y << "\t" << front.z << std::endl;
 		std::cout << "up " << up.x << "\t" << up.y << "\t" << up.z << std::endl;
+		std::cout << "yaw " << this->yaw << "\tpitch " << this->pitch << "\troll " << this->roll << std::endl;
+		std::cout << "==================\n";
 
 	}
 }
