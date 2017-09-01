@@ -1,6 +1,6 @@
 #include "ModelTree.h"
 
-ModelTree::ModelTree(ModelType *modelType, glm::vec3 pos, GLfloat r, GLfloat p, GLfloat y) : Model(modelType, pos, r, p, y) {}
+ModelTree::ModelTree(ModelType *modelType, glm::vec3 pos, GLfloat r, GLfloat p, GLfloat y, glm::vec3 scale) : Model(modelType, pos, r, p, y, scale) {}
 
 void ModelTree::draw(Shader *shader, GLint level)
 {

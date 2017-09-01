@@ -1,6 +1,6 @@
 #include "Model.h"
 
-Model::Model(ModelType *modelType, glm::vec3 pos, GLfloat r, GLfloat p, GLfloat y)
+Model::Model(ModelType *modelType, glm::vec3 pos, GLfloat r, GLfloat p, GLfloat y, glm::vec3 scale)
 {
 	this->modelType = modelType;
 	this->position = pos;
@@ -10,6 +10,7 @@ Model::Model(ModelType *modelType, glm::vec3 pos, GLfloat r, GLfloat p, GLfloat 
 	this->pitch = p;
 	this->roll = r;
 	this->updateVectors();
+	this->scale = scale;
 }
 
 GLuint Model::getVAO()
@@ -22,9 +23,9 @@ glm::mat4 Model::getModelMatrix()
 	glm::vec3 right = glm::normalize(glm::cross(this->front, this->up));
 	glm::mat4 model;
 	model = glm::translate(model, this->position);
-	model[0] = glm::vec4(this->front, 0.0f);
-	model[1] = glm::vec4(this->up, 0.0f);
-	model[2] = glm::vec4(right, 0.0f);
+	model[0] = glm::vec4(this->scale.x*this->front, 0.0f);
+	model[1] = glm::vec4(this->scale.y*this->up, 0.0f);
+	model[2] = glm::vec4(this->scale.z*right, 0.0f);
 	//model = glm::scale(model, glm::vec3(1.0f)); //not used yet
 
 	return model;

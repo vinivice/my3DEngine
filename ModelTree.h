@@ -13,7 +13,7 @@ protected:
 	std::vector<ModelTree*> parts;
 
 public:
-	ModelTree(ModelType *modelType, glm::vec3 pos, GLfloat r, GLfloat p, GLfloat y);
+	ModelTree(ModelType *modelType, glm::vec3 pos, GLfloat r, GLfloat p, GLfloat y, glm::vec3 scale);
 	//virtual void update();
 	virtual void draw(Shader *shader, GLint level = 0);
 	void addPart(ModelTree* part);

@@ -14,17 +14,22 @@ class Model
 {
 protected:
 	glm::vec3 position;
+	
 	GLfloat roll; //rotate over x
 	GLfloat pitch; // rotate over y
 	GLfloat yaw; //rotate over z
+
+	glm::vec3 scale;
+
 	glm::vec3 front; //aka x
 	glm::vec3 up; // aka y
+
 
 
 	ModelType *modelType;
 
 public:
-	Model(ModelType *modelType, glm::vec3 pos, GLfloat r, GLfloat p, GLfloat y);
+	Model(ModelType *modelType, glm::vec3 pos, GLfloat r, GLfloat p, GLfloat y, glm::vec3 scale);
 	GLuint getVAO();
 	glm::mat4 getModelMatrix();
 	void updateVectors();
@@ -36,9 +41,9 @@ public:
 
 	/*
 	void updatePosition(float dx, float dy, float dz);
-	void setPosition(float x, float y, float z);
-	void setVectors(glm::vec3 front, glm::vec3 up, glm::vec3 right);
-	virtual void updateObject() = 0;
+	void setPosition(float px, float py, float pz);
+	void setScale(float sx, float sy, float sz);
+	void setVectors(glm::vec3 front, glm::vec3 up);
 	*/
 	
 };

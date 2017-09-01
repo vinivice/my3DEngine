@@ -1,7 +1,7 @@
 #include "Camera.h"
 #include<iostream>
 
-Camera::Camera() :Model(NULL, glm::vec3(0.0f), 0.0f, 90.0f, 0.0f)
+Camera::Camera() :Model(NULL, glm::vec3(0.0f), 0.0f, 90.0f, 0.0f, glm::vec3(1.0f))
 {
 	//chande initialization
 	this->moveMode = 0;

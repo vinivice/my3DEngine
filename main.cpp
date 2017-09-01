@@ -17,12 +17,17 @@
 #include"ModelTree.h"
 #include "Camera.h"
 
+//TEMPORARY FOR TEST************************************************
+GLfloat ka, kd, ks;
+GLint n;
+//******************************************************************
+
 const GLint WIDTH = 800, HEIGHT = 600;
 Camera *camera = new Camera();
 bool keyPress = false, keyRepeat = false, keyRelease = false;
 GLdouble mouseOldX, mouseOldY, mouseNewX, mouseNewY;
 
-GLboolean run = true;
+GLboolean run = false;
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
 	if(key == GLFW_KEY_ESCAPE)
@@ -32,10 +37,15 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	else if (key == GLFW_KEY_B && action == GLFW_PRESS)
 	{
 		run = !run;
+		printf("RUN\n");
 	}
 }
 
 int main() {
+	//TEMPORARY FOR TEST************************************************
+	ka = kd = ks = 1.0f;
+	n = 2;
+	//******************************************************************
 
 	glfwInit();
 
@@ -81,13 +91,42 @@ int main() {
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+	GLfloat verticesCube[] =
+	{
+		//position				//color					//Normal
+		0.5f, 0.5f, 0.5f,		0.0f, 0.0f, 0.0f,		1.0f / sqrtf(3), 1.0f / sqrtf(3), 1.0f / sqrtf(3),
+		0.5f, 0.5f, -0.5f,		1.0f, 0.0f, 0.0f,		1.0f / sqrtf(3), 1.0f / sqrtf(3), -1.0f / sqrtf(3),
+		0.5f, -0.5f, 0.5f,		0.0f, 1.0f, 0.0f,		1.0f / sqrtf(3), -1.0f / sqrtf(3), 1.0f / sqrtf(3),
+		0.5f, -0.5f, -0.5f,		0.0f, 0.0f, 1.0f,		1.0f / sqrtf(3), -1.0f / sqrtf(3), -1.0f / sqrtf(3),
+		-0.5f, 0.5f, 0.5f,		1.0f, 1.0f, 0.0f,		-1.0f / sqrtf(3), 1.0f / sqrtf(3), 1.0f / sqrtf(3),
+		-0.5f, 0.5f, -0.5f,		1.0f, 0.0f, 1.0f,		-1.0f / sqrtf(3), 1.0f / sqrtf(3), -1.0f / sqrtf(3),
+		-0.5f, -0.5f, 0.5f,		0.0f, 1.0f, 1.0f,		-1.0f / sqrtf(3), -1.0f / sqrtf(3), 1.0f / sqrtf(3),
+		-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 1.0f,		-1.0f / sqrtf(3), -1.0f / sqrtf(3), -1.0f / sqrtf(3)
+	};
+
+	GLuint indicesCube[] =
+	{
+		0, 1, 2, //R1
+		1, 2, 3, //R2
+		4, 5, 6, //L1
+		5, 6, 7, //L2
+		0, 1, 4, //Up1
+		1, 4, 5, //Up2
+		2, 3, 6, //Bot1
+		3, 6, 7, //Bot2
+		0, 2, 4, //Front1
+		2, 4, 6, //Front2
+		1, 3, 5, //Back1
+		3, 5, 7 //Back2
+	};
+	
 	GLfloat verticesSquare[] =
 	{
-		//Position				//Color					
-		0.5f, 0.5f, 0.0f,       0.0f, 0.0f, 1.0f,
-		0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f,
-		-0.5f, -0.5f, 0.0f,		1.0f, 0.0f, 0.0f,
-		-0.5f, 0.5f, 0.0f,		1.0f, 1.0f, 1.0f
+		//Position				//Color					//Normal
+		1.0f, 1.0f, 0.0f,       0.0f, 0.0f, 1.0f,		0.0f, 0.0f, 1.0f,
+		-1.0f, 1.0f, 0.0f,		1.0f, 1.0f, 1.0f,		0.0f, 0.0f, 1.0f,
+		-1.0f, -1.0f, 0.0f,		1.0f, 0.0f, 0.0f,		0.0f, 0.0f, 1.0f,
+		1.0f, -1.0f, 0.0f,		0.0f, 1.0f, 0.0f,		0.0f, 0.0f, 1.0f
 
 	};
 
@@ -98,21 +137,36 @@ int main() {
 	};
 
 	ModelType *Square = new ModelType("square", verticesSquare, sizeof(verticesSquare), indicesSquare, sizeof(indicesSquare), 6);
+	ModelType *Cube = new ModelType("cube", verticesCube, sizeof(verticesCube), indicesCube, sizeof(indicesCube), 36);
 	std::vector<Model*> modelsVector;
 
-	modelsVector.push_back(new Model(Square, glm::vec3(-0.5f, 0.5f, -15.0f), 0.0f, 0.0f, 0.0f));
-	modelsVector.push_back(new Model(Square, glm::vec3(0.5f, 0.5f, -10.0f), 0.0f, 0.0f, 0.0f));
-	modelsVector.push_back(new Model(Square, glm::vec3(0.5f, -0.5f, -5.f), 0.0f, 0.0f, 0.0f));
-	modelsVector.push_back(new Model(Square, glm::vec3(-0.5f, -0.5f, -2.0f), 0.0f, 0.0f, 0.0f));
+	modelsVector.push_back(new Model(Square, glm::vec3(-0.5f, 0.5f, -15.0f), 0.0f, 0.0f, 0.0f, glm::vec3(0.5f)));
+	modelsVector.push_back(new Model(Square, glm::vec3(0.5f, 0.5f, -10.0f), 0.0f, 0.0f, 0.0f, glm::vec3(0.5f)));
+	modelsVector.push_back(new Model(Square, glm::vec3(0.5f, -0.5f, -5.f), 0.0f, 0.0f, 0.0f, glm::vec3(0.5f)));
+	modelsVector.push_back(new Model(Square, glm::vec3(-0.5f, -0.5f, -2.0f), 0.0f, 0.0f, 0.0f, glm::vec3(0.5f)));
 
-	ModelTree *tempModelTree = new ModelTree(NULL, glm::vec3(0.0f, 0.0f, -20.0f), 0.0f, 0.0f, 0.0f);
+	modelsVector.push_back(new Model(Cube, glm::vec3(-0.5f, -0.5f, -25.0f), 0.0f, 0.0f, 0.0f, glm::vec3(0.5f)));
 
-	tempModelTree->addPart(new ModelTree(Square, glm::vec3(0.5f, 0.0f, 0.0f), 0.0f, -90.0f, 0.0f));
-	tempModelTree->addPart(new ModelTree(Square, glm::vec3(-0.5f, 0.0f, 0.0f), 0.0f, 90.0f, 0.0f));
-	tempModelTree->addPart(new ModelTree(Square, glm::vec3(0.0f, 0.5f, 0.0f), 90.0f, 0.0f, 0.0f));
-	tempModelTree->addPart(new ModelTree(Square, glm::vec3(0.0f, -0.5f, 0.0f), -90.0f, 0.0f, 0.0f));
-	tempModelTree->addPart(new ModelTree(Square, glm::vec3(0.0f, 0.0f, 0.5f), 0.0f, 0.0f, 0.0f));
-	tempModelTree->addPart(new ModelTree(Square, glm::vec3(0.0f, 0.0f, -0.5f), 0.0f, 0.0f, 0.0f));
+	ModelTree *tempModelTree = new ModelTree(NULL, glm::vec3(0.0f, 0.0f, -20.0f), 0.0f, 0.0f, 0.0f, glm::vec3(0.5f));
+
+	tempModelTree->addPart(new ModelTree(Square, glm::vec3(0.5f, 0.0f, 0.0f), 0.0f, -90.0f, 0.0f, glm::vec3(0.5f)));
+	tempModelTree->addPart(new ModelTree(Square, glm::vec3(-0.5f, 0.0f, 0.0f), 0.0f, 90.0f, 0.0f, glm::vec3(0.5f)));
+	tempModelTree->addPart(new ModelTree(Square, glm::vec3(0.0f, 0.5f, 0.0f), 90.0f, 0.0f, 0.0f, glm::vec3(0.5f)));
+	tempModelTree->addPart(new ModelTree(Square, glm::vec3(0.0f, -0.5f, 0.0f), -90.0f, 0.0f, 0.0f, glm::vec3(0.5f)));
+	tempModelTree->addPart(new ModelTree(Square, glm::vec3(0.0f, 0.0f, 0.5f), 0.0f, 0.0f, 0.0f, glm::vec3(0.5f)));
+	tempModelTree->addPart(new ModelTree(Square, glm::vec3(0.0f, 0.0f, -0.5f), 0.0f, 0.0f, 0.0f, glm::vec3(0.5f)));
+
+	modelsVector.push_back(tempModelTree);
+
+	tempModelTree = new ModelTree(NULL, glm::vec3(0.0f, 0.0f, -40.0f), 0.0f, 0.0f, 0.0f, glm::vec3(0.5f));
+
+	tempModelTree->addPart(new ModelTree(Cube, glm::vec3(0.0f, 0.50f, 0.0f), 0.0f, 0.0f, 0.0f, glm::vec3(0.20f)));
+	tempModelTree->addPart(new ModelTree(Cube, glm::vec3(0.0f, 0.0f, 0.0f), 0.0f, 0.0f, 0.0f, glm::vec3(0.5f, 0.80f, 0.25f)));
+	tempModelTree->addPart(new ModelTree(Cube, glm::vec3(0.30f, 0.10f, 0.0f), 0.0f, 0.0f, 0.0f, glm::vec3(0.10f, 0.5f, 0.10f)));
+	tempModelTree->addPart(new ModelTree(Cube, glm::vec3(-0.30f, 0.10f, 0.0f), 0.0f, 0.0f, 0.0f, glm::vec3(0.10f, 0.5f, 0.10f)));
+	tempModelTree->addPart(new ModelTree(Cube, glm::vec3(0.10f, -0.75f, 0.0f), 0.0f, 0.0f, 0.0f, glm::vec3(0.10f, 0.70f, 0.10f)));
+	tempModelTree->addPart(new ModelTree(Cube, glm::vec3(-0.10f, -0.75f, 0.0f), 0.0f, 0.0f, 0.0f, glm::vec3(0.10f, 0.70f, 0.10f)));
+
 
 	modelsVector.push_back(tempModelTree);
 
@@ -189,7 +243,7 @@ int main() {
 		{
 			if (run)
 			{
-				//(*it)->increaseAngles(0.0f, 0.0f, (newTime - oldTime)*(15.0f));
+				(*it)->increaseAngles(0.0f, 0.0f, (newTime - oldTime)*(15.0f));
 				(*it)->updateVectors();
 				//(*it)->printData();
 			}
