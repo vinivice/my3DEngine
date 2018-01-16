@@ -16,14 +16,16 @@
 #include"Model.h"
 #include"ModelTree.h"
 #include "Camera.h"
+#include "Light.h"
 
 //TEMPORARY FOR TEST************************************************
-GLfloat ka, kd, ks;
+GLfloat ka, kd, ks, omega = 0.1f;
 GLint n;
 //******************************************************************
 
 const GLint WIDTH = 800, HEIGHT = 600;
 Camera *camera = new Camera();
+PointLight *pointLight = new PointLight(100.0f, 100.0f, 100.0f, glm::vec3(0.0f));
 bool keyPress = false, keyRepeat = false, keyRelease = false;
 GLdouble mouseOldX, mouseOldY, mouseNewX, mouseNewY;
 
@@ -37,7 +39,14 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	else if (key == GLFW_KEY_B && action == GLFW_PRESS)
 	{
 		run = !run;
-		printf("RUN\n");
+	}
+	else if (key == GLFW_KEY_M && action == GLFW_PRESS)
+	{
+		omega += 0.1;
+	}
+	else if (key == GLFW_KEY_N && action == GLFW_PRESS)
+	{
+		omega -= 0.1;
 	}
 }
 
@@ -138,6 +147,7 @@ int main() {
 
 	ModelType *Square = new ModelType("square", verticesSquare, sizeof(verticesSquare), indicesSquare, sizeof(indicesSquare), 6);
 	ModelType *Cube = new ModelType("cube", verticesCube, sizeof(verticesCube), indicesCube, sizeof(indicesCube), 36);
+	Model *LModel;
 	std::vector<Model*> modelsVector;
 
 	modelsVector.push_back(new Model(Square, glm::vec3(-0.5f, 0.5f, -15.0f), 0.0f, 0.0f, 0.0f, glm::vec3(0.5f)));
@@ -146,6 +156,8 @@ int main() {
 	modelsVector.push_back(new Model(Square, glm::vec3(-0.5f, -0.5f, -2.0f), 0.0f, 0.0f, 0.0f, glm::vec3(0.5f)));
 
 	modelsVector.push_back(new Model(Cube, glm::vec3(-0.5f, -0.5f, -25.0f), 0.0f, 0.0f, 0.0f, glm::vec3(0.5f)));
+	LModel = new Model(Cube, glm::vec3(-0.5f, -0.5f, -25.0f), 0.0f, 0.0f, 0.0f, glm::vec3(0.1f));
+	modelsVector.push_back(LModel);
 
 	ModelTree *tempModelTree = new ModelTree(NULL, glm::vec3(0.0f, 0.0f, -20.0f), 0.0f, 0.0f, 0.0f, glm::vec3(0.5f));
 
@@ -200,21 +212,31 @@ int main() {
 
 	glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), (GLfloat)WIDTH / HEIGHT, 0.1f, 100.0f);
 
-	GLfloat oldTime, newTime;
+	GLfloat oldTime, newTime, dt;
 	oldTime = (GLfloat)glfwGetTime();
 	glm::mat4 modelMatrix;
-	GLint modelLocation, viewLocation, projectionLocation;
+	GLint modelLocation, viewLocation, projectionLocation, lightPowerLocation, lightPositionLocation, tempLightConstsLocation;
 	glfwGetCursorPos(window, &mouseOldX, &mouseOldY);
 
 
 	while (!glfwWindowShouldClose(window))
 	{
 		newTime = (GLfloat)glfwGetTime();
+		dt = newTime - oldTime;
 		glfwPollEvents();
 		glfwGetCursorPos(window, &mouseNewX, &mouseNewY);
 		
-		camera->move(window, newTime - oldTime, mouseNewX - mouseOldX, mouseNewY - mouseOldY, viewMatrix);
+		camera->move(window, dt, mouseNewX - mouseOldX, mouseNewY - mouseOldY, viewMatrix);
 
+		pointLight->setPosition(0.0f, 1.0f*sin(omega*newTime), -20.0f + 10.0f*cos(omega*newTime));
+		LModel->setPosition(pointLight->position);
+		std::cout << pointLight->position.x << ", " << pointLight->position.y << ", " << pointLight->position.z << std::endl;
+		lightPowerLocation = glGetUniformLocation(ourShader.Program, "lightPower");
+		lightPositionLocation = glGetUniformLocation(ourShader.Program, "lightPosition");
+		glUniform3fv(lightPowerLocation, 1, glm::value_ptr(pointLight->power));
+		glUniform3fv(lightPositionLocation, 1, glm::value_ptr(pointLight->position));
+		tempLightConstsLocation = glGetUniformLocation(ourShader.Program, "temporaryLightConstants");
+		glUniform4f(tempLightConstsLocation, ka, kd, ks, n);
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -243,7 +265,7 @@ int main() {
 		{
 			if (run)
 			{
-				(*it)->increaseAngles(0.0f, 0.0f, (newTime - oldTime)*(15.0f));
+				(*it)->turn(0.0f, 0.0f, dt*(15.0f));
 				(*it)->updateVectors();
 				//(*it)->printData();
 			}

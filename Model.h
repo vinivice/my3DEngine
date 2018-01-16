@@ -33,12 +33,12 @@ public:
 	GLuint getVAO();
 	glm::mat4 getModelMatrix();
 	void updateVectors();
-	void increaseAngles(GLfloat dr, GLfloat dp, GLfloat dy);
+	void turn(GLfloat dr, GLfloat dp, GLfloat dy);
 	void setAngles(GLfloat r, GLfloat p, GLfloat y);
 	void printData();
 	//virtual void update();
 	virtual void draw(Shader *shader, GLint level = 0);
-
+	void setPosition(glm::vec3 pos);
 	/*
 	void updatePosition(float dx, float dy, float dz);
 	void setPosition(float px, float py, float pz);

@@ -63,11 +63,8 @@ void Model::updateVectors()
 
 }
 
-void Model::increaseAngles(GLfloat dr, GLfloat dp, GLfloat dy)
+void Model::turn(GLfloat dr, GLfloat dp, GLfloat dy)
 {
-	//this->rool += dr;
-	//this->pitch += dp;
-	//this->yaw += dy;
 
 	this->roll = fmod(this->roll + dr, 360.0f);
 	this->pitch = fmod(this->pitch + dp, 360.0f);
@@ -76,6 +73,7 @@ void Model::increaseAngles(GLfloat dr, GLfloat dp, GLfloat dy)
 
 void Model::setAngles(GLfloat r, GLfloat p, GLfloat y)
 {
+	//fmod here
 	this->roll = r;
 	this->pitch = p;
 	this->yaw = y;
@@ -98,4 +96,9 @@ void Model::draw(Shader *shader, GLint level)
 	glBindVertexArray(this->getVAO());
 	glDrawElements(GL_TRIANGLES, this->modelType->getNumberVertices(), GL_UNSIGNED_INT, 0);
 
+}
+
+void Model::setPosition(glm::vec3 pos)
+{
+	this->position = pos;
 }
